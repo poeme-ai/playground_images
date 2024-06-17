@@ -23,6 +23,8 @@ if "n_postagens" not in st.session_state:
     st.session_state.n_postagens = 1
 if "debug_logs" not in st.session_state:
     st.session_state.debug_logs = []
+if "query_used" not in st.session_state:
+    st.session_state.query_used = ''
 
 # Sidebar menu for selecting image generation method
 with st.sidebar:
@@ -41,9 +43,6 @@ def export_debug_logs():
     """Export debug logs to a text file"""
     log_content = "\n".join(json.dumps(log, indent=2) for log in st.session_state.debug_logs)
     return log_content
-
-def get_generated_slides():
-    return open('./temp/output.pptx', 'rb')
 
 def show_generated_posts():
     files = []
@@ -87,7 +86,8 @@ def generate_posts_from_user_input(descricao, legenda, n_exemplos):
     if os.path.exists(result_images_filepath):
         shutil.rmtree(result_images_filepath)
 
-    generate_posts(image_description=descricao, image_caption=legenda, images_sample=n_exemplos)
+    query_used = generate_posts(image_description=descricao, image_caption=legenda, images_sample=n_exemplos)
+    st.session_state.query_used = query_used
 
 # Main content
 st.header('Geração de Postagens')
@@ -109,6 +109,7 @@ if st.session_state['status_postagem'] == 'nao_gerada':
     st.button('Gerar Postagens', on_click=execute_generate_posts)
 
 elif st.session_state['status_postagem'] == 'gerada':
+    st.write(f"Palavras usadas na pesquisa de imagem: {st.session_state.query_used}")
     st.button('Gerar novamente', on_click=reset_post_status)
     show_generated_posts()
 

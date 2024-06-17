@@ -55,3 +55,5 @@ def generate_posts(
             image_path = os.path.join('.', 'temp', 'images', img)
             add_caption_to_image(image_path, [image_caption],
                                  {idx+1},post_type,add_black_background)
+            
+    return image_descripto_to_query
