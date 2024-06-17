@@ -10,19 +10,27 @@ from extras.unsplash.post_geneator import generate_posts
 load_dotenv()
 st.title("{po.è.me} Playground - Post Generation")
 
-# Define the image generation methods
-IMAGE_GENERATION_METHODS = ["Unsplash", "Other Method"]
-
+# Initialize session state variables
 if "selected_method" not in st.session_state:
     st.session_state.selected_method = "Unsplash"
+if "status_postagem" not in st.session_state:
+    st.session_state.status_postagem = 'nao_gerada'
+if "descricao_postagem" not in st.session_state:
+    st.session_state.descricao_postagem = ''
+if "legenda_postagem" not in st.session_state:
+    st.session_state.legenda_postagem = ''
+if "n_postagens" not in st.session_state:
+    st.session_state.n_postagens = 1
+if "debug_logs" not in st.session_state:
+    st.session_state.debug_logs = []
 
 # Sidebar menu for selecting image generation method
 with st.sidebar:
     st.header("Configurações")
-    st.session_state.selected_method = st.selectbox("Geração de imagens via:", options=IMAGE_GENERATION_METHODS)
+    st.session_state.selected_method = st.selectbox("Geração de imagens via:", options=["Unsplash", "Other Method"])
 
 def log_action(action_description, data):
-    """ Log actions for debugging purposes """
+    """Log actions for debugging purposes"""
     st.session_state.debug_logs.append({
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "action": action_description,
@@ -30,7 +38,7 @@ def log_action(action_description, data):
     })
 
 def export_debug_logs():
-    """ Export debug logs to a text file """
+    """Export debug logs to a text file"""
     log_content = "\n".join(json.dumps(log, indent=2) for log in st.session_state.debug_logs)
     return log_content
 
@@ -38,19 +46,19 @@ def get_generated_slides():
     return open('./temp/output.pptx', 'rb')
 
 def show_generated_posts():
-    files=[]
+    files = []
     if not st.session_state['legenda_postagem']:
-        posts_dir = os.path.join('.', 'temp','images')
-        files = [os.path.join(posts_dir,file) for file in os.listdir(posts_dir)]
+        posts_dir = os.path.join('.', 'temp', 'images')
+        files = [os.path.join(posts_dir, file) for file in os.listdir(posts_dir)]
     else:
-        posts_dir = os.path.join('.', 'temp','posts')
+        posts_dir = os.path.join('.', 'temp', 'posts')
         for alternative in os.listdir(posts_dir):
-            altpath = os.path.join(posts_dir,alternative)
-            filepath= os.path.join(altpath, os.listdir(altpath)[0])
+            altpath = os.path.join(posts_dir, alternative)
+            filepath = os.path.join(altpath, os.listdir(altpath)[0])
             files.append(filepath)
 
-    if len(files)>5:
-        col1,col2 = st.columns(2)
+    if len(files) > 5:
+        col1, col2 = st.columns(2)
         with col1:
             for file in files[:5]:
                 st.image(file)
