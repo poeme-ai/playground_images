@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from extras.unsplash.post_geneator import generate_posts
 
 load_dotenv()
-st.title("{po.è.me} Playground - Post Generation")
+st.title("{po.è.me} Playground - Geração de Posts")
 
 # Initialize session state variables
 if "selected_method" not in st.session_state:
