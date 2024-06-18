@@ -104,11 +104,11 @@ if st.session_state['status_postagem'] == 'nao_gerada':
     if descricao_postagem:
         st.session_state['descricao_postagem'] = descricao_postagem
 
-    legenda_postagem = st.text_input(label='Legenda para adicionar na imagem', placeholder='Opicional')
+    legenda_postagem = st.text_input(label='Legenda para adicionar na imagem')
     if legenda_postagem:
         st.session_state['legenda_postagem'] = legenda_postagem
 
-    n_postagens = st.selectbox(label='Numero de postagens: ', options=[i+1 for i in range(10)])
+    n_postagens = st.selectbox(label='Numero de postagens: ', options=[i+1 for i in range(10)], index=4)
     st.session_state['n_postagens'] = n_postagens
 
     st.button('Gerar Postagens', on_click=execute_generate_posts)

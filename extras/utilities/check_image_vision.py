@@ -2,7 +2,7 @@ import os
 from extras.agent_basic_llm.llm_api import ChatApp
 from openai import OpenAI
 
-check_image_adequacy_prompt = 'You are an expert in determining if an image, based on its description, has all the elements requested. You will receive the text of an image description and the elements requested, and you should respond exactly and only with "yes" if it is correct or "no" if the image does not cotain the elements.'
+check_image_adequacy_prompt = 'You are an expert in determining if an image, based on its description, has all the elements requested. You will receive the text of an image description and the elements requested, and you should respond exactly and only with "yes" if the image contas at least two of the elemets or "no" otherwise'
 
 def describe_image(image_url:str)->str:
     client = OpenAI(api_key=os.environ['OPENAI_API_KEY'])
