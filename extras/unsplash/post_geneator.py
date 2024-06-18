@@ -1,5 +1,6 @@
 import logging
 import os
+from extras.utilities.check_image_vision import check_image_adequacy
 from extras.utilities.image_caption import add_caption_to_image
 from dotenv import load_dotenv
 
@@ -44,8 +45,9 @@ def generate_posts(
 
     for idx, img in enumerate(images):
         image_url = img['urls']['regular']
-        image_path = os.path.join(TEMP_IMAGES_DIR, f'image_{idx + 1}.jpg')
-        download_image(image_url, image_path)
+        if check_image_adequacy(image_url, image_descripto_to_query):
+            image_path = os.path.join(TEMP_IMAGES_DIR, f'image_{idx + 1}.jpg')
+            download_image(image_url, image_path)
     
     logger.info('Image download complete')
 
