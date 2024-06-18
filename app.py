@@ -5,7 +5,8 @@ import os
 import shutil
 from dotenv import load_dotenv
 
-from extras.unsplash.post_geneator import generate_posts
+from extras.dalle.dalle_image_generation import generate_posts_dalle
+from extras.unsplash.post_geneator import generate_posts as generate_posts_unsplash
 
 load_dotenv()
 st.title("{po.è.me} Playground - Geração de Posts")
@@ -29,7 +30,7 @@ if "query_used" not in st.session_state:
 # Sidebar menu for selecting image generation method
 with st.sidebar:
     st.header("Configurações")
-    st.session_state.selected_method = st.selectbox("Geração de imagens via:", options=["Unsplash", "Other Method"])
+    st.session_state.selected_method = st.selectbox("Geração de imagens via:", options=["Unsplash", "DALL-E 3"])
 
 def log_action(action_description, data):
     """Log actions for debugging purposes"""
@@ -86,7 +87,11 @@ def generate_posts_from_user_input(descricao, legenda, n_exemplos):
     if os.path.exists(result_images_filepath):
         shutil.rmtree(result_images_filepath)
 
-    query_used = generate_posts(image_description=descricao, image_caption=legenda, images_sample=n_exemplos)
+    if st.session_state.selected_method == "Unsplash":
+        query_used = generate_posts_unsplash(image_description=descricao, image_caption=legenda, images_sample=n_exemplos)
+    elif st.session_state.selected_method == "DALL-E 3":
+        query_used = generate_posts_dalle(image_description=descricao, image_caption=legenda, images_sample=n_exemplos)
+    
     st.session_state.query_used = query_used
 
 # Main content
