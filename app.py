@@ -30,7 +30,7 @@ if "query_used" not in st.session_state:
 # Sidebar menu for selecting image generation method
 with st.sidebar:
     st.header("Configurações")
-    st.session_state.selected_method = st.selectbox("Geração de imagens via:", options=["Unsplash", "DALL-E 3"])
+    st.session_state.selected_method = st.selectbox("Geração de imagens preferencialmente via:", options=["Unsplash", "DALL-E 3"])
 
 def log_action(action_description, data):
     """Log actions for debugging purposes"""
@@ -87,10 +87,14 @@ def generate_posts_from_user_input(descricao, legenda, n_exemplos):
     if os.path.exists(result_images_filepath):
         shutil.rmtree(result_images_filepath)
 
+    query_used = ""
+    num_images = 0
+
     if st.session_state.selected_method == "Unsplash":
         query_used, num_images = generate_posts_unsplash(image_description=descricao, image_caption=legenda, images_sample=n_exemplos)
-        if num_images == 0:
-            query_used = generate_posts_dalle(image_description=descricao, image_caption=legenda, images_sample=n_exemplos)
+        if num_images < n_exemplos:
+            remaining_images = n_exemplos - num_images
+            generate_posts_dalle(image_description=descricao, image_caption=legenda, images_sample=remaining_images, start_index=num_images)
     else:
         query_used = generate_posts_dalle(image_description=descricao, image_caption=legenda, images_sample=n_exemplos)
     
