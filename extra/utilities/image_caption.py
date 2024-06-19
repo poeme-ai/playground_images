@@ -30,7 +30,7 @@ def add_caption_to_image(img_path: str, captions: 'list[str]', option_idx,
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    font_dir = os.path.join('.','extras','utilities' ,'fonts')
+    font_dir = os.path.join(os.path.dirname(__file__), 'fonts')
     font_files = [os.path.join(font_dir, fontfile) for fontfile in os.listdir(font_dir)]
     font_path = font_files[random.randint(0, len(font_files) - 1)]
 
