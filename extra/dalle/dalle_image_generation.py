@@ -4,7 +4,7 @@ from PIL import Image
 import requests
 from io import BytesIO
 
-from extras.utilities.image_caption import add_caption_to_image
+from extra.utilities.image_caption import add_caption_to_image
 
 TEMP_IMAGES_DIR = os.path.join('.', 'temp', 'images')
 

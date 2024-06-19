@@ -1,11 +1,11 @@
 import logging
 import os
-from extras.utilities.check_image_vision import check_image_adequacy
-from extras.utilities.image_caption import add_caption_to_image
+from extra.utilities.check_image_vision import check_image_adequacy
+from extra.utilities.image_caption import add_caption_to_image
 from dotenv import load_dotenv
 
-from extras.agent_basic_llm.llm_api import ChatApp
-from extras.unsplash.get_unsplash_images import download_image, search_images
+from extra.agent_basic_llm.llm_api import ChatApp
+from extra.unsplash.get_unsplash_images import download_image, search_images
 
 load_dotenv()
 
