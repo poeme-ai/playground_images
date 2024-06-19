@@ -29,7 +29,8 @@ def generate_posts(
         image_caption:str, 
         post_type:str='image', 
         add_black_background:bool = True,
-        images_sample:int = 10
+        images_sample:int = 10,
+        vision_validate = True
     ):
 
     if post_type not in ['image', 'text']:
@@ -46,7 +47,13 @@ def generate_posts(
     num_returned_images = 0
     for idx, img in enumerate(images):
         image_url = img['urls']['regular']
-        if check_image_adequacy(image_url, image_descripto_to_query):
+        if vision_validate == True:
+            if check_image_adequacy(image_url, image_descripto_to_query):
+                image_path = os.path.join(TEMP_IMAGES_DIR, f'image_{idx + 1}.jpg')
+                download_image(image_url, image_path)
+                num_returned_images +=1
+        else:
+            image_url = img['urls']['regular']
             image_path = os.path.join(TEMP_IMAGES_DIR, f'image_{idx + 1}.jpg')
             download_image(image_url, image_path)
             num_returned_images +=1

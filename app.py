@@ -45,7 +45,7 @@ else:
     # Sidebar menu for selecting image generation method
     with st.sidebar:
         st.header("Configurações")
-        st.session_state.selected_method = st.selectbox("Geração de imagens preferencialmente via:", options=["Auto (Unsplash + IA)","Unsplash", "DALL-E 3"])
+        st.session_state.selected_method = st.selectbox("Geração de imagens preferencialmente via:", options=["Auto (Unsplash + IA)","Unsplash (com validação de vision)","Unsplash (direto sem validação)", "DALL-E 3"])
 
     def log_action(action_description, data):
         """Log actions for debugging purposes"""
@@ -110,7 +110,9 @@ else:
             if num_images < n_exemplos:
                 remaining_images = n_exemplos - num_images
                 generate_posts_dalle(image_description=descricao, image_caption=legenda, images_sample=remaining_images, start_index=num_images)
-        elif st.session_state.selected_method == "Unsplash":
+        elif st.session_state.selected_method == "Unsplash (direto sem validação)":
+            query_used, num_images = generate_posts_unsplash(image_description=descricao, image_caption=legenda, images_sample=n_exemplos, vision_validate=False)
+        elif st.session_state.selected_method == "Unsplash (com validação de vision)":
             query_used, num_images = generate_posts_unsplash(image_description=descricao, image_caption=legenda, images_sample=n_exemplos)
             if num_images < 1:
                 st.error("Nenhuma imagem do Unsplash correspoudeu as critérios de forma segura")
