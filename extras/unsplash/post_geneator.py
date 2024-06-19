@@ -43,11 +43,13 @@ def generate_posts(
 
     logger.info('Image search complete')
 
+    num_returned_images = 0
     for idx, img in enumerate(images):
         image_url = img['urls']['regular']
         if check_image_adequacy(image_url, image_descripto_to_query):
             image_path = os.path.join(TEMP_IMAGES_DIR, f'image_{idx + 1}.jpg')
             download_image(image_url, image_path)
+            num_returned_images +=1
     
     logger.info('Image download complete')
 
@@ -58,4 +60,4 @@ def generate_posts(
             add_caption_to_image(image_path, [image_caption],
                                  {idx+1},post_type,add_black_background)
             
-    return image_descripto_to_query
+    return image_descripto_to_query, num_returned_images

@@ -21,7 +21,7 @@ if "descricao_postagem" not in st.session_state:
 if "legenda_postagem" not in st.session_state:
     st.session_state.legenda_postagem = ''
 if "n_postagens" not in st.session_state:
-    st.session_state.n_postagens = 1
+    st.session_state.n_postagens = 5
 if "debug_logs" not in st.session_state:
     st.session_state.debug_logs = []
 if "query_used" not in st.session_state:
@@ -88,8 +88,10 @@ def generate_posts_from_user_input(descricao, legenda, n_exemplos):
         shutil.rmtree(result_images_filepath)
 
     if st.session_state.selected_method == "Unsplash":
-        query_used = generate_posts_unsplash(image_description=descricao, image_caption=legenda, images_sample=n_exemplos)
-    elif st.session_state.selected_method == "DALL-E 3":
+        query_used, num_images = generate_posts_unsplash(image_description=descricao, image_caption=legenda, images_sample=n_exemplos)
+        if num_images == 0:
+            query_used = generate_posts_dalle(image_description=descricao, image_caption=legenda, images_sample=n_exemplos)
+    else:
         query_used = generate_posts_dalle(image_description=descricao, image_caption=legenda, images_sample=n_exemplos)
     
     st.session_state.query_used = query_used
