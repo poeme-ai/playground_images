@@ -20,16 +20,20 @@ source .venv/bin/activate
 ```
 
 
-
+### Instalar as dependências:
 ```bash
 pip install -r requirements.txt
 ```
 
-(TODO: Variáveis de Ambiente)
+### Atribuir variáveis de ambiente:
+Criar arquivo .env:
+OPENAI_API_KEY="<chave aqui>"
+REPLICATE_API_TOKEN="<chave aqui>"
+UNSPLASH_APP_ID="<chave aqui>"
+UNSPLASH_ACCESS_KEY="<chave aqui>"
+UNSPLASH_SECRET_KEY="<chave aqui>"
 
-```bash
-streamlit run app.py
-```
+### Iniciar aplicação:
 ```bash
 streamlit run app.py
 ```
