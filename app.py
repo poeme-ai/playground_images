@@ -6,6 +6,7 @@ import shutil
 from dotenv import load_dotenv
 
 from extra.dalle.dalle_image_generation import generate_posts_dalle
+from extra.replicate.replicate_models_call import generate_posts_replicate_model
 from extra.unsplash.post_geneator import generate_posts as generate_posts_unsplash
 
 load_dotenv()
@@ -45,7 +46,18 @@ else:
     # Sidebar menu for selecting image generation method
     with st.sidebar:
         st.header("Configurações")
-        st.session_state.selected_method = st.selectbox("Geração de imagens preferencialmente via:", options=["Auto (Unsplash + IA)","Unsplash (com validação de vision)","Unsplash (direto sem validação)", "DALL-E 3"])
+        st.session_state.selected_method = st.selectbox(
+            "Geração de imagens preferencialmente via:", 
+            options=[
+                "Auto (Unsplash + IA)",
+                "Unsplash (com validação de vision)",
+                "Unsplash (direto sem validação)",
+                "Recraft V3",
+                "Flux Pro",
+                "Ideogram V2",
+                "DALL-E 3"
+            ]
+        )
 
     def log_action(action_description, data):
         """Log actions for debugging purposes"""
@@ -109,14 +121,41 @@ else:
             query_used, num_images = generate_posts_unsplash(image_description=descricao, image_caption=legenda, images_sample=n_exemplos)
             if num_images < n_exemplos:
                 remaining_images = n_exemplos - num_images
-                generate_posts_dalle(image_description=descricao, image_caption=legenda, images_sample=remaining_images, start_index=num_images)
+                generate_posts_replicate_model(
+                    image_description=descricao, 
+                    image_caption=legenda, 
+                    model="recraft-ai/recraft-v3",
+                    images_sample=remaining_images, 
+                    start_index=num_images
+                )
         elif st.session_state.selected_method == "Unsplash (direto sem validação)":
             query_used, num_images = generate_posts_unsplash(image_description=descricao, image_caption=legenda, images_sample=n_exemplos, vision_validate=False)
         elif st.session_state.selected_method == "Unsplash (com validação de vision)":
             query_used, num_images = generate_posts_unsplash(image_description=descricao, image_caption=legenda, images_sample=n_exemplos)
             if num_images < 1:
                 st.error("Nenhuma imagem do Unsplash correspoudeu as critérios de forma segura")
-        else:
+        elif st.session_state.selected_method == "Recraft V3":
+            query_used = generate_posts_replicate_model(
+                image_description=descricao, 
+                image_caption=legenda, 
+                model="recraft-ai/recraft-v3",
+                images_sample=n_exemplos
+            )
+        elif st.session_state.selected_method == "Flux Pro":
+            query_used = generate_posts_replicate_model(
+                image_description=descricao, 
+                image_caption=legenda, 
+                model="black-forest-labs/flux-1.1-pro",
+                images_sample=n_exemplos
+            )
+        elif st.session_state.selected_method == "Ideogram V2":
+            query_used = generate_posts_replicate_model(
+                image_description=descricao, 
+                image_caption=legenda, 
+                model="ideogram-ai/ideogram-v2",
+                images_sample=n_exemplos
+            )
+        else:  # DALL-E 3
             query_used = generate_posts_dalle(image_description=descricao, image_caption=legenda, images_sample=n_exemplos)
         
         st.session_state.query_used = query_used
