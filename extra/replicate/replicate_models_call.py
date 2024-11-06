@@ -17,7 +17,7 @@ def generate_posts_replicate_model(image_description, image_caption, model="", i
             input={"prompt": image_description}
         )
 
-        response = requests.get(output[0])
+        response = requests.get(output)
         img = Image.open(BytesIO(response.content))
         image_path = os.path.join(TEMP_IMAGES_DIR, f'dalle_image_{start_index + i + 1}.png')
         img.save(image_path)

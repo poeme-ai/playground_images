@@ -9,7 +9,7 @@ from extra.dalle.dalle_image_generation import generate_posts_dalle
 from extra.replicate.replicate_models_call import generate_posts_replicate_model
 from extra.unsplash.post_geneator import generate_posts as generate_posts_unsplash
 
-load_dotenv()
+load_dotenv(override=True)
 st.title("{po.è.me} Playground - Geração de Posts")
 
 # Initialize session state variables
@@ -52,9 +52,9 @@ else:
                 "Auto (Unsplash + IA)",
                 "Unsplash (com validação de vision)",
                 "Unsplash (direto sem validação)",
-                "Recraft V3",
-                "Flux Pro",
                 "Ideogram V2",
+                "Flux Pro",
+                "Recraft V3",
                 "DALL-E 3"
             ]
         )
@@ -124,7 +124,7 @@ else:
                 generate_posts_replicate_model(
                     image_description=descricao, 
                     image_caption=legenda, 
-                    model="recraft-ai/recraft-v3",
+                    model="ideogram-ai/ideogram-v2",
                     images_sample=remaining_images, 
                     start_index=num_images
                 )
