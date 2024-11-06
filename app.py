@@ -74,15 +74,19 @@ else:
 
     def show_generated_posts():
         files = []
-        if not st.session_state['legenda_postagem']:
-            posts_dir = os.path.join('.', 'temp', 'images')
-            files = [os.path.join(posts_dir, file) for file in os.listdir(posts_dir)]
-        else:
+        # Verifica se é uma geração do Unsplash (que usa a pasta posts)
+        if ("Unsplash" in st.session_state.selected_method) and st.session_state['legenda_postagem']:
             posts_dir = os.path.join('.', 'temp', 'posts')
-            for alternative in os.listdir(posts_dir):
-                altpath = os.path.join(posts_dir, alternative)
-                filepath = os.path.join(altpath, os.listdir(altpath)[0])
-                files.append(filepath)
+            if os.path.exists(posts_dir):  # Adiciona verificação de existência
+                for alternative in os.listdir(posts_dir):
+                    altpath = os.path.join(posts_dir, alternative)
+                    filepath = os.path.join(altpath, os.listdir(altpath)[0])
+                    files.append(filepath)
+        else:
+            # Para outros casos (Replicate, DALL-E, etc), usa a pasta images diretamente
+            posts_dir = os.path.join('.', 'temp', 'images')
+            if os.path.exists(posts_dir):  # Adiciona verificação de existência
+                files = [os.path.join(posts_dir, file) for file in os.listdir(posts_dir)]
 
         if len(files) > 5:
             col1, col2 = st.columns(2)
