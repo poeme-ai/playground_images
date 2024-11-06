@@ -49,13 +49,13 @@ else:
         st.session_state.selected_method = st.selectbox(
             "Geração de imagens preferencialmente via:", 
             options=[
-                "Auto (Unsplash + IA)",
+                "Ideogram V2 (Recomendado)",
+                "Flux Pro",
+                "Flux Pro Ultra"
+                "Recraft V3 SVG (para Logos)",
+                #"Auto (Unsplash + IA)",
                 "Unsplash (com validação de vision)",
                 "Unsplash (direto sem validação)",
-                "Ideogram V2",
-                "Flux Pro",
-                "Recraft V3",
-                "DALL-E 3"
             ]
         )
 
@@ -105,7 +105,7 @@ else:
         else:
             st.session_state['status_postagem'] = 'gerando'
 
-    def generate_posts_from_user_input(descricao, legenda, n_exemplos):
+    def generate_posts_from_user_input(descricao, legenda, n_exemplos, posicao):
         result_posts_filepath = os.path.join('.', 'temp', 'posts')
         if os.path.exists(result_posts_filepath):
             shutil.rmtree(result_posts_filepath)
@@ -118,7 +118,12 @@ else:
         num_images = 0
 
         if st.session_state.selected_method == "Auto (Unsplash + IA)":
-            query_used, num_images = generate_posts_unsplash(image_description=descricao, image_caption=legenda, images_sample=n_exemplos)
+            query_used, num_images = generate_posts_unsplash(
+                image_description=descricao, 
+                image_caption=legenda, 
+                images_sample=n_exemplos,
+                caption_position=posicao
+            )
             if num_images < n_exemplos:
                 remaining_images = n_exemplos - num_images
                 generate_posts_replicate_model(
@@ -126,37 +131,56 @@ else:
                     image_caption=legenda, 
                     model="ideogram-ai/ideogram-v2",
                     images_sample=remaining_images, 
-                    start_index=num_images
+                    start_index=num_images,
+                    caption_position=posicao
                 )
         elif st.session_state.selected_method == "Unsplash (direto sem validação)":
-            query_used, num_images = generate_posts_unsplash(image_description=descricao, image_caption=legenda, images_sample=n_exemplos, vision_validate=False)
+            query_used, num_images = generate_posts_unsplash(
+                image_description=descricao, 
+                image_caption=legenda, 
+                images_sample=n_exemplos, 
+                vision_validate=False,
+                caption_position=posicao
+            )
         elif st.session_state.selected_method == "Unsplash (com validação de vision)":
-            query_used, num_images = generate_posts_unsplash(image_description=descricao, image_caption=legenda, images_sample=n_exemplos)
-            if num_images < 1:
-                st.error("Nenhuma imagem do Unsplash correspoudeu as critérios de forma segura")
-        elif st.session_state.selected_method == "Recraft V3":
+            query_used, num_images = generate_posts_unsplash(
+                image_description=descricao, 
+                image_caption=legenda, 
+                images_sample=n_exemplos,
+                caption_position=posicao
+            )
+        elif "Recraft V3 SVG" in st.session_state.selected_method:
             query_used = generate_posts_replicate_model(
                 image_description=descricao, 
                 image_caption=legenda, 
-                model="recraft-ai/recraft-v3",
-                images_sample=n_exemplos
+                model="recraft-ai/recraft-v3-svg",
+                images_sample=n_exemplos,
+                caption_position=posicao
             )
-        elif st.session_state.selected_method == "Flux Pro":
+        elif "Flux Pro" in st.session_state.selected_method:
             query_used = generate_posts_replicate_model(
                 image_description=descricao, 
                 image_caption=legenda, 
                 model="black-forest-labs/flux-1.1-pro",
-                images_sample=n_exemplos
+                images_sample=n_exemplos,
+                caption_position=posicao
             )
-        elif st.session_state.selected_method == "Ideogram V2":
+        elif "Ideogram V2" in st.session_state.selected_method:
             query_used = generate_posts_replicate_model(
                 image_description=descricao, 
                 image_caption=legenda, 
                 model="ideogram-ai/ideogram-v2",
-                images_sample=n_exemplos
+                images_sample=n_exemplos,
+                caption_position=posicao
             )
-        else:  # DALL-E 3
-            query_used = generate_posts_dalle(image_description=descricao, image_caption=legenda, images_sample=n_exemplos)
+        elif "Flux Pro Ultra" in st.session_state.selected_method:
+            query_used = generate_posts_replicate_model(
+                image_description=descricao, 
+                image_caption=legenda, 
+                model="black-forest-labs/flux-1.1-pro-ultra",
+                images_sample=n_exemplos,
+                caption_position=posicao
+            )
         
         st.session_state.query_used = query_used
 
@@ -170,9 +194,17 @@ else:
         if descricao_postagem:
             st.session_state['descricao_postagem'] = descricao_postagem
 
-        legenda_postagem = st.text_input(label='Legenda para adicionar na imagem')
+        legenda_postagem = st.text_input(label='Legenda / Texto da Imagem (se houver)')
         if legenda_postagem:
             st.session_state['legenda_postagem'] = legenda_postagem
+
+        if legenda_postagem:
+            posicao_legenda = st.selectbox(
+                label='Posição da Legenda',
+                options=['superior', 'meio da imagem', 'inferior'],
+                index=2
+            )
+            st.session_state['posicao_legenda'] = posicao_legenda
 
         n_postagens = st.selectbox(label='Numero de postagens: ', options=[i+1 for i in range(10)], index=4)
         st.session_state['n_postagens'] = n_postagens
@@ -188,7 +220,8 @@ else:
         with st.spinner(text='Gerando postagens. Isso pode levar alguns minutos'):
             generate_posts_from_user_input(st.session_state['descricao_postagem'],
                                         st.session_state['legenda_postagem'],
-                                        st.session_state['n_postagens'])
+                                        st.session_state['n_postagens'],
+                                        st.session_state.get('posicao_legenda', 'inferior'))
 
             st.session_state['status_postagem'] = 'gerada'
             st.success('Postagem gerada com sucesso')

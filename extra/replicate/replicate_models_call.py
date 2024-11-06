@@ -8,16 +8,26 @@ from extra.utilities.image_caption import add_caption_to_image
 
 TEMP_IMAGES_DIR = os.path.join('.', 'temp', 'images')
 
-def generate_posts_replicate_model(image_description, image_caption, model="", images_sample=1, start_index=0):
+def generate_posts_replicate_model(image_description, image_caption, model="", images_sample=1, start_index=0, caption_position='inferior'):
     os.makedirs(TEMP_IMAGES_DIR, exist_ok=True)
     successful_generations = 0
 
+    # Modify prompt based on caption
+    prompt = image_description
+    if image_caption:
+        position_text = {
+            'superior': 'acima',
+            'meio da imagem': 'ao meio',
+            'inferior': 'abaixo'
+        }
+        prompt = f"{image_description}, {position_text[caption_position]} a imagem contem como legenda o exato seguinte texto \"{image_caption}\""
+
     for i in range(images_sample):
         try:
-            # Start the prediction
+            # Start the prediction with modified prompt
             prediction = replicate.run(
                 model,
-                input={"prompt": image_description}
+                input={"prompt": prompt}
             )
             
             print(f'prediction: {prediction}')
@@ -32,9 +42,6 @@ def generate_posts_replicate_model(image_description, image_caption, model="", i
             img = Image.open(BytesIO(response.content))
             image_path = os.path.join(TEMP_IMAGES_DIR, f'dalle_image_{start_index + successful_generations + 1}.png')
             img.save(image_path)
-
-            if image_caption:
-                add_caption_to_image(image_path, [image_caption], start_index + successful_generations + 1)
             
             successful_generations += 1
 

@@ -30,7 +30,8 @@ def generate_posts(
         post_type:str='image', 
         add_black_background:bool = True,
         images_sample:int = 10,
-        vision_validate = True
+        vision_validate = True,
+        caption_position = 'inferior'
     ):
 
     if post_type not in ['image', 'text']:
@@ -62,9 +63,15 @@ def generate_posts(
 
     if image_caption:
         logger.info('Generating captions ...')  
-        for idx, img in enumerate(os.listdir(TEMP_IMAGES_DIR )):
+        for idx, img in enumerate(os.listdir(TEMP_IMAGES_DIR)):
             image_path = os.path.join('.', 'temp', 'images', img)
-            add_caption_to_image(image_path, [image_caption],
-                                 {idx+1},post_type,add_black_background)
+            add_caption_to_image(
+                image_path, 
+                [image_caption],
+                {idx+1},
+                post_type,
+                add_black_background,
+                caption_position
+            )
             
     return image_descripto_to_query, num_returned_images

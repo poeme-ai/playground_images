@@ -8,7 +8,8 @@ logger = logging.getLogger(__name__)
 
 
 def add_caption_to_image(img_path: str, captions: 'list[str]', option_idx,
-                         post_type: str = 'image', add_black_background: bool = True) -> None:
+                         post_type: str = 'image', add_black_background: bool = True,
+                         caption_position: str = 'inferior') -> None:
     """
     Takes an image and edits it. Draw the provided caption over the image. If add_black_background is True,
     a black square is drawn behind the text. post_type specifies the type of post. The text is centralized for a text post
@@ -19,6 +20,7 @@ def add_caption_to_image(img_path: str, captions: 'list[str]', option_idx,
     :param option_idx: auxiliary variable to organize the files (saves the image in alternativa_{option_idx})
     :param post_type: 'image' or 'text', the type of post that is being created
     :param add_black_background: if there is or not a black square behind the text
+    :param caption_position: position of the caption on the image
     """
 
     # basic verifications
@@ -130,7 +132,12 @@ def add_caption_to_image(img_path: str, captions: 'list[str]', option_idx,
 
         # position is a function of the post_style
         if post_type == 'image':
-            position = ((image_width - text_size) / 2, image.size[1] - 1.5 * text_height)  # Adjusted position for lower text
+            if caption_position == 'superior':
+                position = ((image_width - text_size) / 2, text_height)
+            elif caption_position == 'meio da imagem':
+                position = ((image_width - text_size) / 2, (image.size[1] - text_height) / 2)
+            else:  # inferior (default)
+                position = ((image_width - text_size) / 2, image.size[1] - 1.5 * text_height)
         elif post_type == 'text':
             position = ((image_width - text_size) / 2, (image_width - text_height) / 2)
         else:
