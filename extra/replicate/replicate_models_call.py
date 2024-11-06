@@ -16,11 +16,11 @@ def generate_posts_replicate_model(image_description, image_caption, model="", i
     prompt = image_description
     if image_caption:
         position_text = {
-            'superior': 'acima',
-            'meio da imagem': 'ao meio',
-            'inferior': 'abaixo'
+            'superior': 'ACIMA',
+            'meio da imagem': 'NO MEIO, SOBREPOSTA',
+            'inferior': 'ABAIXO'
         }
-        prompt = f"{image_description}, {position_text[caption_position]} a imagem contem como legenda o exato seguinte texto \"{image_caption}\""
+        prompt = f"{image_description}. A imagem deve conter uma LEGENDA com EXATAMENTE OS SEGUINTE TEXTO: \"{image_caption}\". A LEGENDA DEVE ESTAR {position_text[caption_position]} DA IMAGEM."
 
     for i in range(images_sample):
         try:

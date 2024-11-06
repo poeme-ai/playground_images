@@ -102,6 +102,8 @@ else:
 
     def reset_post_status():
         st.session_state['status_postagem'] = 'nao_gerada'
+        st.session_state['legenda_postagem'] = ''  # Clear the caption
+        st.session_state['descricao_postagem'] = ''  # It's good practice to clear this too
 
     def execute_generate_posts():
         if not all([st.session_state['descricao_postagem'], st.session_state['n_postagens']]):
