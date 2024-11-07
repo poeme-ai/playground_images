@@ -77,7 +77,10 @@ def add_caption_to_image(img_path: str, captions: 'list[str]', option_idx,
         original_name = os.path.splitext(os.path.basename(img_path))[0]
 
         # output file
-        filename = f'alternativa_{idx+1}.png'
+        if option_idx:
+            filename = f'alternativa_{option_idx+1}.png'
+        else:
+            filename = f'alternativa_1.png'
 
         # get the image
         image = Image.open(img_path)
