@@ -59,6 +59,18 @@ else:
             ]
         )
 
+        if st.session_state.selected_method == "Ideogram V2 (Recomendado)":
+            st.session_state.caption_type = st.radio(
+                "Tipo de Legenda:",
+                options=[
+                    "Legenda no próprio prompt (integrada na imagem)",
+                    "Legenda inserida (após a geração da imagem)"
+                ],
+                index=0
+            )
+        else:
+            st.session_state.caption_type = "Legenda inserida (após a geração da imagem)"
+
     def log_action(action_description, data):
         """Log actions for debugging purposes"""
         st.session_state.debug_logs.append({
@@ -123,24 +135,7 @@ else:
         query_used = ""
         num_images = 0
 
-        if st.session_state.selected_method == "Auto (Unsplash + IA)":
-            query_used, num_images = generate_posts_unsplash(
-                image_description=descricao, 
-                image_caption=legenda, 
-                images_sample=n_exemplos,
-                caption_position=posicao
-            )
-            if num_images < n_exemplos:
-                remaining_images = n_exemplos - num_images
-                generate_posts_replicate_model(
-                    image_description=descricao, 
-                    image_caption=legenda, 
-                    model="ideogram-ai/ideogram-v2",
-                    images_sample=remaining_images, 
-                    start_index=num_images,
-                    caption_position=posicao
-                )
-        elif st.session_state.selected_method == "Unsplash (direto sem validação)":
+        if st.session_state.selected_method == "Unsplash (direto sem validação)":
             query_used, num_images = generate_posts_unsplash(
                 image_description=descricao, 
                 image_caption=legenda, 
@@ -155,39 +150,37 @@ else:
                 images_sample=n_exemplos,
                 caption_position=posicao
             )
-        elif "Recraft V3 SVG" in st.session_state.selected_method:
+        else:
+            # For replicate models
+            model_name = ""
+            if "Recraft V3 SVG" in st.session_state.selected_method:
+                model_name = "recraft-ai/recraft-v3-svg"
+            elif "Flux Pro Ultra" in st.session_state.selected_method:
+                model_name = "black-forest-labs/flux-1.1-pro-ultra"
+            elif "Flux Pro" in st.session_state.selected_method:
+                model_name = "black-forest-labs/flux-1.1-pro"
+            elif "Ideogram V2" in st.session_state.selected_method:
+                model_name = "ideogram-ai/ideogram-v2"
+
+            # Determine if caption should be inserted via prompt
+            insert_caption_via_prompt = False
+            if st.session_state.selected_method == "Ideogram V2 (Recomendado)":
+                if st.session_state.caption_type == "Legenda no próprio prompt (integrada na imagem)":
+                    insert_caption_via_prompt = True
+                else:
+                    insert_caption_via_prompt = False
+            else:
+                insert_caption_via_prompt = False  # For other models, always use image_caption.py
+
             query_used = generate_posts_replicate_model(
                 image_description=descricao, 
                 image_caption=legenda, 
-                model="recraft-ai/recraft-v3-svg",
+                model=model_name,
                 images_sample=n_exemplos,
-                caption_position=posicao
+                caption_position=posicao,
+                insert_caption_via_prompt=insert_caption_via_prompt  # Pass the new parameter
             )
-        elif "Flux Pro" in st.session_state.selected_method:
-            query_used = generate_posts_replicate_model(
-                image_description=descricao, 
-                image_caption=legenda, 
-                model="black-forest-labs/flux-1.1-pro",
-                images_sample=n_exemplos,
-                caption_position=posicao
-            )
-        elif "Ideogram V2" in st.session_state.selected_method:
-            query_used = generate_posts_replicate_model(
-                image_description=descricao, 
-                image_caption=legenda, 
-                model="ideogram-ai/ideogram-v2",
-                images_sample=n_exemplos,
-                caption_position=posicao
-            )
-        elif "Flux Pro Ultra" in st.session_state.selected_method:
-            query_used = generate_posts_replicate_model(
-                image_description=descricao, 
-                image_caption=legenda, 
-                model="black-forest-labs/flux-1.1-pro-ultra",
-                images_sample=n_exemplos,
-                caption_position=posicao
-            )
-        
+
         st.session_state.query_used = query_used
 
     # Main content

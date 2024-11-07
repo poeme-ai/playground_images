@@ -8,17 +8,25 @@ from extra.utilities.image_caption import add_caption_to_image
 
 TEMP_IMAGES_DIR = os.path.join('.', 'temp', 'images')
 
-def generate_posts_replicate_model(image_description, image_caption, model="", images_sample=1, start_index=0, caption_position='inferior'):
+def generate_posts_replicate_model(
+    image_description,
+    image_caption,
+    model="",
+    images_sample=1,
+    start_index=0,
+    caption_position='inferior',
+    insert_caption_via_prompt=True  # New parameter added
+):
     os.makedirs(TEMP_IMAGES_DIR, exist_ok=True)
     successful_generations = 0
 
-    # Modify prompt based on caption
+    # Modify prompt based on caption if insert_caption_via_prompt is True
     prompt = image_description
-    if image_caption:
+    if image_caption and insert_caption_via_prompt:
         position_text = {
             'superior': 'na parte de cima da imagem',
             'meio da imagem': 'no centro da imagem, de forma sobreposta',
-            'inferior': 'ba parte de baixo da imagem'
+            'inferior': 'na parte de baixo da imagem'
         }
         prompt = f"{image_description}. A imagem deve conter uma legenda com exatamente o seguinte texto: \"{image_caption}\". A legenda deve estar {position_text[caption_position]}"
 
@@ -29,11 +37,13 @@ def generate_posts_replicate_model(image_description, image_caption, model="", i
                 model,
                 input={"prompt": prompt}
             )
-            
-            print(f'prediction: {prediction}')
-            
-            # The prediction is already a direct URL string
-            image_url = prediction
+
+            # The prediction may return a list or a single URL
+            if isinstance(prediction, list):
+                image_url = prediction[0]
+            else:
+                image_url = prediction
+
             if not image_url:
                 print(f"Warning: No valid image URL received for image {i + 1}")
                 continue
@@ -42,7 +52,18 @@ def generate_posts_replicate_model(image_description, image_caption, model="", i
             img = Image.open(BytesIO(response.content))
             image_path = os.path.join(TEMP_IMAGES_DIR, f'dalle_image_{start_index + successful_generations + 1}.png')
             img.save(image_path)
-            
+
+            # If insert_caption_via_prompt is False, add caption using image_caption.py
+            if image_caption and not insert_caption_via_prompt:
+                add_caption_to_image(
+                    image_path,
+                    [image_caption],
+                    start_index + successful_generations + 1,
+                    post_type='image',
+                    add_black_background=True,
+                    caption_position=caption_position
+                )
+
             successful_generations += 1
 
         except Exception as e:
