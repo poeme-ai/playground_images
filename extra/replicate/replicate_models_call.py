@@ -61,7 +61,7 @@ def generate_posts_replicate_model(
                 add_caption_to_image(
                     image_path,
                     [image_caption],
-                    {start_index + successful_generations + 1},
+                    start_index + successful_generations + 1,
                     post_type='image',
                     add_black_background=True,
                     caption_position=caption_position
