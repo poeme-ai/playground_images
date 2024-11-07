@@ -3,6 +3,8 @@ from PIL import Image, ImageDraw, ImageFont
 import random
 
 import logging
+
+from extra.constants import OUTPUT_PATH
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -27,7 +29,7 @@ def add_caption_to_image(img_path: str, captions: 'list[str]', option_idx,
     if not os.path.exists(img_path):
         raise FileNotFoundError(f'Unable to find {img_path}!')
 
-    output_dir = os.path.join('.', 'temp', 'posts', f'alternativa_{option_idx}')
+    output_dir = OUTPUT_PATH
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -75,7 +77,7 @@ def add_caption_to_image(img_path: str, captions: 'list[str]', option_idx,
         original_name = os.path.splitext(os.path.basename(img_path))[0]
 
         # output file
-        filename = f'{original_name}_{idx}.png'
+        filename = f'alternativa_{idx+1}.png'
 
         # get the image
         image = Image.open(img_path)

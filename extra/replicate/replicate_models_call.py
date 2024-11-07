@@ -4,9 +4,8 @@ import requests
 from io import BytesIO
 import replicate
 
+from extra.constants import OUTPUT_PATH, TEMP_IMAGES_DIR
 from extra.utilities.image_caption import add_caption_to_image
-
-TEMP_IMAGES_DIR = os.path.join('.', 'temp', 'images')
 
 def generate_posts_replicate_model(
     image_description,
@@ -17,7 +16,6 @@ def generate_posts_replicate_model(
     caption_position='inferior',
     insert_caption_via_prompt=True  # New parameter added
 ):
-    os.makedirs(TEMP_IMAGES_DIR, exist_ok=True)
     successful_generations = 0
 
     # Modify prompt based on caption if insert_caption_via_prompt is True
@@ -50,7 +48,12 @@ def generate_posts_replicate_model(
 
             response = requests.get(image_url)
             img = Image.open(BytesIO(response.content))
-            image_path = os.path.join(TEMP_IMAGES_DIR, f'dalle_image_{start_index + successful_generations + 1}.png')
+            if not insert_caption_via_prompt:
+                os.makedirs(TEMP_IMAGES_DIR, exist_ok=True)
+                image_path = os.path.join(TEMP_IMAGES_DIR, f'dalle_image_{start_index + successful_generations + 1}.png')
+            else:
+                os.makedirs(OUTPUT_PATH, exist_ok=True)
+                image_path = os.path.join(OUTPUT_PATH, f'alternativa_{start_index + successful_generations + 1}.png')
             img.save(image_path)
 
             # If insert_caption_via_prompt is False, add caption using image_caption.py
@@ -58,7 +61,7 @@ def generate_posts_replicate_model(
                 add_caption_to_image(
                     image_path,
                     [image_caption],
-                    start_index + successful_generations + 1,
+                    {start_index + successful_generations + 1},
                     post_type='image',
                     add_black_background=True,
                     caption_position=caption_position
@@ -73,4 +76,4 @@ def generate_posts_replicate_model(
     if successful_generations == 0:
         raise ValueError(f"Failed to generate any images with model {model}")
 
-    return image_description
+    return prompt

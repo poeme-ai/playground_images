@@ -5,6 +5,7 @@ import os
 import shutil
 from dotenv import load_dotenv
 
+from extra.constants import OUTPUT_PATH
 from extra.dalle.dalle_image_generation import generate_posts_dalle
 from extra.replicate.replicate_models_call import generate_posts_replicate_model
 from extra.unsplash.post_geneator import generate_posts as generate_posts_unsplash
@@ -86,19 +87,21 @@ else:
 
     def show_generated_posts():
         files = []
-        # Verifica se é uma geração do Unsplash (que usa a pasta posts)
-        if ("Unsplash" in st.session_state.selected_method) and st.session_state['legenda_postagem']:
-            posts_dir = os.path.join('.', 'temp', 'posts')
-            if os.path.exists(posts_dir):  # Adiciona verificação de existência
-                for alternative in os.listdir(posts_dir):
-                    altpath = os.path.join(posts_dir, alternative)
+        # Check if the directory exists first
+        if not os.path.exists(OUTPUT_PATH):
+            st.error("No posts directory found")
+            return
+        
+        # If it's a direct file in the output path (from replicate models)
+        if any(file.startswith('alternativa_') for file in os.listdir(OUTPUT_PATH)):
+            files = [os.path.join(OUTPUT_PATH, f) for f in os.listdir(OUTPUT_PATH)]
+        else:
+            # Original logic for nested structure (Unsplash)
+            for alternative in os.listdir(OUTPUT_PATH):
+                altpath = os.path.join(OUTPUT_PATH, alternative)
+                if os.path.isdir(altpath) and os.listdir(altpath):  # Check if it's a directory and not empty
                     filepath = os.path.join(altpath, os.listdir(altpath)[0])
                     files.append(filepath)
-        else:
-            # Para outros casos (Replicate, DALL-E, etc), usa a pasta images diretamente
-            posts_dir = os.path.join('.', 'temp', 'images')
-            if os.path.exists(posts_dir):  # Adiciona verificação de existência
-                files = [os.path.join(posts_dir, file) for file in os.listdir(posts_dir)]
 
         if len(files) > 5:
             col1, col2 = st.columns(2)
