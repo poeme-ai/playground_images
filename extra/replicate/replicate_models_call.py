@@ -14,7 +14,8 @@ def generate_posts_replicate_model(
     images_sample=1,
     start_index=0,
     caption_position='inferior',
-    insert_caption_via_prompt=True  # New parameter added
+    insert_caption_via_prompt=True,
+    style=None
 ):
     successful_generations = 0
 
@@ -31,9 +32,13 @@ def generate_posts_replicate_model(
     for i in range(images_sample):
         try:
             # Start the prediction with modified prompt
+            input_params = {"prompt": prompt}
+            if style:
+                input_params["style"] = style
+
             prediction = replicate.run(
                 model,
-                input={"prompt": prompt}
+                input=input_params
             )
 
             # The prediction may return a list or a single URL

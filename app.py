@@ -51,6 +51,7 @@ else:
             "Geração de imagens preferencialmente via:", 
             options=[
                 "Ideogram V2 (Recomendado)",
+                "Recraft V3 Images",
                 "Flux Pro",
                 "Flux Pro Ultra",
                 "Recraft V3 SVG (para Logos)",
@@ -60,7 +61,7 @@ else:
             ]
         )
 
-        if st.session_state.selected_method == "Ideogram V2 (Recomendado)":
+        if st.session_state.selected_method in ["Ideogram V2 (Recomendado)", "Recraft V3 Images"]:
             st.session_state.caption_type = st.radio(
                 "Tipo de Legenda:",
                 options=[
@@ -164,10 +165,12 @@ else:
                 model_name = "black-forest-labs/flux-1.1-pro"
             elif "Ideogram V2" in st.session_state.selected_method:
                 model_name = "ideogram-ai/ideogram-v2"
+            elif "Recraft V3 Images" in st.session_state.selected_method:
+                model_name = "recraft-ai/recraft-v3"
 
             # Determine if caption should be inserted via prompt
             insert_caption_via_prompt = False
-            if st.session_state.selected_method == "Ideogram V2 (Recomendado)":
+            if st.session_state.selected_method in ["Ideogram V2 (Recomendado)", "Recraft V3 Images"]:
                 if st.session_state.caption_type == "Legenda no próprio prompt (integrada na imagem)":
                     insert_caption_via_prompt = True
                 else:
@@ -181,7 +184,8 @@ else:
                 model=model_name,
                 images_sample=n_exemplos,
                 caption_position=posicao,
-                insert_caption_via_prompt=insert_caption_via_prompt  # Pass the new parameter
+                insert_caption_via_prompt=insert_caption_via_prompt,
+                style="realistic_image" if model_name == "recraft-ai/recraft-v3" else None  # Add style parameter
             )
 
         st.session_state.query_used = query_used
