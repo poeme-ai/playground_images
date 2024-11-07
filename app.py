@@ -51,7 +51,7 @@ else:
             options=[
                 "Ideogram V2 (Recomendado)",
                 "Flux Pro",
-                "Flux Pro Ultra"
+                "Flux Pro Ultra",
                 "Recraft V3 SVG (para Logos)",
                 #"Auto (Unsplash + IA)",
                 "Unsplash (com validação de vision)",
