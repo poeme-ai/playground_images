@@ -1,7 +1,5 @@
 ## Playground Images
 Contém o código para criação de Playground de teste de diferentes métodos de geração de imagens, com legegenda opcional, utilizando Streamlit, com intuito de permitir testes para definição da estratégia de geração de Posts da Poème
-## Utilização na web
-Dsponível em [https://poeme-playground.streamlit.app/](https://poeme-post-images-playground.streamlit.app/)
 
 ## Utilização Local - Instalação via git clone:
 Requisitos: instalação de git e python.
