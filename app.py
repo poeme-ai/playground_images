@@ -32,7 +32,7 @@ if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
 def authenticate(password):
-    if password == os.getenv("PASSWORD"):
+    if password == 'poeme2!0#24':
         st.session_state.authenticated = True
     else:
         st.error("Password incorrect")
