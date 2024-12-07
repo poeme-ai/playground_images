@@ -9,7 +9,7 @@ from extra.utilities.image_caption import add_caption_to_image
 
 def generate_posts_replicate_model(
     image_description,
-    image_caption,
+    image_caption,  
     model="",
     images_sample=1,
     start_index=0,
